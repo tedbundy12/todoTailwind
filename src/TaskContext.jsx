@@ -1,21 +1,20 @@
-import React, { createContext, useState, useEffect } from "react";
+// TaskContext.jsx
+import React, { createContext, useContext, useState } from 'react';
 
-// Создаем контекст
-export const TasksContext = createContext();
+const TasksContext = createContext();
 
-export const TasksProvider = ({ children }) => {
+export function useTasks() {
+  return useContext(TasksContext);
+}
+
+export function TasksProvider({ children }) {
   const [tasks, setTasks] = useState([]);
 
-  useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-    if (storedTasks.length) {
-      setTasks(storedTasks);
-    }
-  }, []);
+  const completedTasks = tasks.filter(tasks => tasks.completed).length
 
   return (
-    <TasksContext.Provider value={{ tasks, setTasks }}>
+    <TasksContext.Provider value={{ tasks, setTasks, completedTasks }}>
       {children}
     </TasksContext.Provider>
   );
-};
+}

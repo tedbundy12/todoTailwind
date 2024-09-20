@@ -2,10 +2,16 @@ import React, { useContext, useEffect } from "react";
 
 import Header from "./Header";
 
-import { TasksContext } from "./TaskContext"; // Импортируем контекст
+import { useTasks } from "./TaskContext";
 
 function Stats() {
-  const { tasks } = useContext(TasksContext); // Получаем задачи из контекста
+  const { tasks } = useTasks();
+
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const todayTasks = tasks.filter(
+    (task) => task.date === getCurrentDate()
+  ).length;
 
   return (
     <div>
@@ -19,17 +25,25 @@ function Stats() {
         </div>
         <div className="w-[250px] h-24 bg-[#374151] rounded">
           <p className="text-center text-white mt-[20px] font-roboto">
-            Completed Tasks <br /> 4
+            Completed Tasks <br /> {completedTasks}
           </p>
         </div>
         <div className="w-[250px] h-24 bg-[#374151] rounded">
           <p className="text-center text-white mt-[20px] font-roboto">
-            Today Tasks <br /> 2
+            Today Tasks <br /> {todayTasks}
           </p>
         </div>
       </div>
     </div>
   );
 }
+
+const getCurrentDate = () => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, "0");
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const year = today.getFullYear();
+  return `${day}.${month}.${year}`;
+};
 
 export default Stats;

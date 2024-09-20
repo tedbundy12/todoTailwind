@@ -1,13 +1,11 @@
-import React from "react";
-
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import Header from "./Header";
-
+// В Tasks.jsx
+import React, { useState } from 'react';
+import { useTasks } from './TaskContext';  // Импортируйте useTasks
+import Header from './Header';
 
 
 function Tasks() {
-  const [tasks, setTasks] = useState([]);
+  const { tasks, setTasks } = useTasks();  // Используйте контекст
   const [input, setInput] = useState("");
   const [editingTaskIndex, setEditingTaskIndex] = useState(null);
   const [editingText, setEditingText] = useState("");
@@ -16,31 +14,19 @@ function Tasks() {
   const getCurrentDate = () => {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // Месяцы начинаются с 0
+    const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     return `${day}.${month}.${year}`;
   };
 
-  // Загружаем задачи из localStorage при первой загрузке
-  useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-    if (storedTasks.length) {
-      setTasks(storedTasks);
-    }
-  }, []);
-
-  // Сохраняем задачи в localStorage при их обновлении
-  useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
-
+  // Функция добавления задачи
   const addTask = () => {
     if (input.trim()) {
       const newTask = {
         text: input,
         completed: false,
-        date: getCurrentDate(), // Добавляем дату создания
-        edited: false, // Изначально задача не отредактирована
+        date: getCurrentDate(),
+        edited: false,
       };
       setTasks([...tasks, newTask]);
       setInput("");
@@ -72,13 +58,11 @@ function Tasks() {
     setTasks(updatedTasks);
   };
 
-  // Функция для начала редактирования задачи
   const startEditingTask = (index) => {
     setEditingTaskIndex(index);
-    setEditingText(tasks[index].text); // Устанавливаем текущее значение текста задачи для редактирования
+    setEditingText(tasks[index].text);
   };
 
-  // Функция для сохранения изменений текста задачи
   const saveTaskText = (index) => {
     if (editingText.trim() && editingText !== tasks[index].text) {
       const updatedTasks = tasks.map((task, i) =>
@@ -86,7 +70,7 @@ function Tasks() {
       );
       setTasks(updatedTasks);
     }
-    setEditingTaskIndex(null); // Останавливаем редактирование
+    setEditingTaskIndex(null);
   };
 
   const handleEditInputChange = (e) => {
@@ -96,7 +80,7 @@ function Tasks() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-900">
       <div className="flex-grow">
-        <Header></Header>
+        <Header />
         <p className="text-white font-roboto text-center font-medium text-[27px] mt-14">
           Today's Tasks
         </p>
@@ -107,7 +91,6 @@ function Tasks() {
                 key={index}
                 className="flex items-center justify-between bg-gray-700 p-4 mb-2 rounded-md"
               >
-                {/* Кружочек для отметки выполнения */}
                 <button
                   onClick={() => toggleTaskCompletion(index)}
                   className={`w-6 h-6 mr-4 rounded-full border-2 flex-shrink-0 ${
@@ -117,13 +100,12 @@ function Tasks() {
                   }`}
                 ></button>
 
-                {/* Режим редактирования текста задачи */}
                 {editingTaskIndex === index ? (
                   <input
                     type="text"
                     value={editingText}
                     onChange={handleEditInputChange}
-                    onBlur={() => saveTaskText(index)} // Сохраняем при потере фокуса
+                    onBlur={() => saveTaskText(index)}
                     className="flex-grow bg-gray-800 text-white p-2 rounded-md mr-4"
                   />
                 ) : (
@@ -136,8 +118,6 @@ function Tasks() {
                     >
                       {task.text}
                     </p>
-
-                    {/* Если задача была отредактирована, отображаем "edited" */}
                     {task.edited && (
                       <span className="text-sm text-gray-400 font-roboto ">
                         (edited)
@@ -146,12 +126,10 @@ function Tasks() {
                   </div>
                 )}
 
-                {/* Дата создания задачи */}
                 <p className="text-gray-400 text-[16px] mr-4 flex-shrink-0">
                   {task.date}
                 </p>
 
-                {/* Иконка для редактирования задачи */}
                 <button
                   onClick={() => startEditingTask(index)}
                   className="text-yellow-400 hover:text-yellow-600 text-0xl flex-shrink-0 mr-2"
@@ -159,7 +137,6 @@ function Tasks() {
                   ✎
                 </button>
 
-                {/* Кнопка для удаления задачи */}
                 <button
                   onClick={() => handleDeleteClick(index)}
                   className="text-red-500 hover:text-red-700 text-0xl flex-shrink-0"
